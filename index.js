@@ -59,8 +59,6 @@ client.connect((err) => {
       });
   });
 
-  
-
   app.post("/addOrder", (req, res) => {
     const order = req.body;
     // console.log(order)
@@ -71,11 +69,12 @@ client.connect((err) => {
   });
 
   app.get("/orders/:email", (req, res) => {
-    ordersCollection.find({userEmail: req.params.email}).toArray((err, documents) => {
-      res.send(documents);
-    });
+    ordersCollection
+      .find({ userEmail: req.params.email })
+      .toArray((err, documents) => {
+        res.send(documents);
+      });
   });
-
 });
 
 app.listen(process.env.PORT || port);
