@@ -20,7 +20,6 @@ const client = new MongoClient(uri, {
   useUnifiedTopology: true,
 });
 client.connect((err) => {
-  console.log(err);
   const productsCollection = client
     .db(process.env.DB_NAME)
     .collection(process.env.DB_PRODUCT_COLLECTION);
@@ -30,7 +29,6 @@ client.connect((err) => {
 
   app.post("/addProduct", (req, res) => {
     const products = req.body;
-    // console.log(products);
     productsCollection.insertOne(products).then((result) => {
       res.json(result.insertedCount);
     });
@@ -49,21 +47,31 @@ client.connect((err) => {
         res.send(documents[0]);
       });
   });
+  app.get("/update/:roll", (req, res) => {
+    res.json(req.params.roll)
+  });
+
+  app.patch("/updateProduct/:id",(req,res)=>{
+    productsCollection.updateOne({ _id: ObjectId(req.params.id) },
+    {
+      $set: {name:req.body.name, price:req.body.price, variant:req.body.variant}
+    })
+    .then(result=>{
+      res.send(result)
+    })
+  })
 
   app.delete("/delete/:id", (req, res) => {
     productsCollection
       .deleteOne({ _id: ObjectId(req.params.id) })
       .then((result) => {
-        console.log(!!result.deletedCount);
         res.json(!!result.deletedCount);
       });
   });
 
   app.post("/addOrder", (req, res) => {
     const order = req.body;
-    // console.log(order)
     ordersCollection.insertOne(order).then((result) => {
-      // console.log(result);
       res.send(result.insertedCount > 0);
     });
   });
